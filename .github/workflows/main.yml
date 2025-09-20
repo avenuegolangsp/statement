@@ -10,6 +10,10 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: ./script  
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -23,7 +27,7 @@ jobs:
         run: go mod tidy
 
       - name: Run tests
-        run: make test
+        run: make test || go test ./...  
 
       - name: Lint
         run: go vet ./...
@@ -37,4 +41,5 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build Docker image
+        working-directory: ./script   # 👈 Dockerfile dentro de script
         run: docker build -t statement-app .

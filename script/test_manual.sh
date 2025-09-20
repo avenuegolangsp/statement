@@ -88,15 +88,32 @@ echo ""
 echo "📋 Teste 2: Real-time Statement"
 echo "-------------------------------"
 
-echo "🧪 Consultando extrato BRL..."
-curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BRASILEIRA/BRL/30d"
+# Calcular datas para os últimos 30 dias
+START_DATE=$(date -u -v-30d +%Y-%m-%d)
+END_DATE=$(date -u +%Y-%m-%d)
+
+echo "🧪 Consultando extrato BRL (últimos 30 dias)..."
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BRASILEIRA/BRL/$START_DATE/$END_DATE"
 
 echo ""
-echo "🧪 Consultando extrato EUR..."
-curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BANKING/EUR/30d"
+echo "🧪 Consultando extrato EUR (últimos 30 dias)..."
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BANKING/EUR/$START_DATE/$END_DATE"
 
 echo ""
-echo "📋 Teste 3: Consultas adicionais"
+echo "📋 Teste 3: Statement com datas customizadas"
+echo "--------------------------------------------"
+
+echo "🧪 Consultando extrato BRL (ano de 2024)..."
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BRASILEIRA/BRL/2024-01-01/2024-12-31"
+
+echo ""
+echo "🧪 Consultando extrato EUR (últimos 7 dias)..."
+LAST_WEEK=$(date -u -v-7d +%Y-%m-%d)
+TODAY=$(date -u +%Y-%m-%d)
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BANKING/EUR/$LAST_WEEK/$TODAY"
+
+echo ""
+echo "📋 Teste 4: Consultas adicionais"
 echo "--------------------------------"
 
 echo "🧪 Consultando histórico de transações..."

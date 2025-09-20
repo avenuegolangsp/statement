@@ -325,8 +325,17 @@ curl -X POST http://localhost:8080/events \
 
 ### Consulta de Extrato
 ```bash
-curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BRASILEIRA/BRL/30d"
+# Formato com datas de início e fim (YYYY-MM-DD)
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BRASILEIRA/BRL/2024-01-01/2024-12-31"
+
+# Exemplo com últimos 30 dias
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BRASILEIRA/BRL/2024-11-01/2024-12-01"
+
+# Exemplo com período específico
+curl -X GET "http://localhost:8080/statement/user-123/CONTA%20BANKING/EUR/2024-06-01/2024-06-30"
 ```
+
+**Formato do endpoint**: `/statement/{userId}/{AccountType}/{CurrencyType}/{startDate}/{endDate}`
 
 ## 🛠️ Makefile
 
@@ -369,3 +378,30 @@ O sistema está completo e pronto para validar a implementação do desafio do S
 - `script/run_tests.sh` - Executa todos os testes automaticamente
 - `script/test_manual.sh` - Testes manuais com cURL
 - `script/main.go` - Execução principal do validador
+
+## Resumo das Alterações
+
+Agora o sistema usa **apenas** o formato com `startDate` e `endDate`:
+
+### 1. **Arquivo `script/api/api.go`**:
+- A função `TestStatementQuery` agora sempre calcula as datas (últimos 30 dias) e usa o formato `startDate/endDate`
+- Mantive a função `TestStatementQueryWithDates` para casos específicos
+
+### 2. **Arquivo `script/test_manual.sh`**:
+- Removido completamente o formato "30d"
+- Adicionado cálculo dinâmico de datas para os últimos 30 dias
+- Adicionado exemplos com diferentes períodos (ano de 2024, últimos 7 dias)
+
+### 3. **Arquivo `README.md`**:
+- Atualizado para mostrar apenas o formato com datas
+- Removidas referências ao formato "30d"
+- Adicionados exemplos práticos com diferentes períodos
+
+### **Novo formato do endpoint**:
+- **Formato**: `/statement/{userId}/{AccountType}/{CurrencyType}/{startDate}/{endDate}`
+- **Exemplos**:
+  - Últimos 30 dias: `/statement/user-123/CONTA%20BRASILEIRA/BRL/2024-11-01/2024-12-01`
+  - Ano completo: `/statement/user-123/CONTA%20BRASILEIRA/BRL/2024-01-01/2024-12-31`
+  - Período específico: `/statement/user-123/CONTA%20BANKING/EUR/2024-06-01/2024-06-30`
+
+Agora o sistema é consistente e usa apenas datas específicas no formato `YYYY-MM-DD`.

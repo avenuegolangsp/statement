@@ -1,0 +1,80 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: statement
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+      # RabbitMQ (mensageria)
+      # 👉 descomentar quando for implementar o Ironman/Thor para publicar/consumir eventos
+      # rabbitmq:
+      #   image: rabbitmq:3-management
+      #   ports:
+      #     - 5672:5672   # protocolo AMQP
+      #     - 15672:15672 # painel web
+      #   environment:
+      #     RABBITMQ_DEFAULT_USER: user
+      #     RABBITMQ_DEFAULT_PASS: pass
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+
+      # -----------------------------------------------------
+      # Build Orquestrador (Avengers)
+      # - Quando implementar o orquestrador em cmd/avengers
+      # - Vai compilar e gerar binário
+      #
+      # - name: Build Orchestrator
+      #   working-directory: ./cmd/avengers
+      #   run: go build -o ../../orchestrator main.go
+
+      # - name: Run Orchestrator in background
+      #   run: |
+      #     ./orchestrator &
+      #     sleep 5
+      #     curl -f http://localhost:8080/health || exit 1
+
+      # -----------------------------------------------------
+      # Rodar script de validação
+      # - Depende do Orquestrador rodando
+      #
+      # - name: Run validation script
+      #   working-directory: ./script
+      #   run: go run main.go --test
+
+      # -----------------------------------------------------
+      # Docker build
+      # - Cada serviço terá seu Dockerfile (avengers, ironman, thor…)
+      # - Quando implementar, descomente para garantir que a imagem builda
+      #
+      # - name: Build Orchestrator Docker image
+      #   run: docker build -t statement-app ./cmd/avengers
+
+      - name: Lint
+        run: go vet ./...

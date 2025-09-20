@@ -25,11 +25,16 @@ jobs:
         ports:
           - 6379:6379
 
-      # kafka:
-      #   image: bitnami/kafka:3
+      # RabbitMQ (mensageria)
+      # 👉 descomentar quando for implementar o Ironman/Thor para publicar/consumir eventos
+      # rabbitmq:
+      #   image: rabbitmq:3-management
       #   ports:
-      #     - 9092:9092
-      # 👉 descomentar quando implementar mensageria no Ironman/Thor
+      #     - 5672:5672   # protocolo AMQP
+      #     - 15672:15672 # painel web
+      #   environment:
+      #     RABBITMQ_DEFAULT_USER: user
+      #     RABBITMQ_DEFAULT_PASS: pass
 
     steps:
       - name: Checkout repo
@@ -41,25 +46,35 @@ jobs:
           go-version: '1.21'
 
       # -----------------------------------------------------
-      # 👉 Build Orquestrador (Avengers)
-      # working-directory: ./avengers
-      # run: go build -o ../../orchestrator ./cmd/api/main.go
+      # Build Orquestrador (Avengers)
+      # - Quando implementar o orquestrador em cmd/avengers
+      # - Vai compilar e gerar binário
       #
+      # - name: Build Orchestrator
+      #   working-directory: ./cmd/avengers
+      #   run: go build -o ../../orchestrator main.go
+
       # - name: Run Orchestrator in background
       #   run: |
       #     ./orchestrator &
       #     sleep 5
       #     curl -f http://localhost:8080/health || exit 1
-      #
-      # -----------------------------------------------------
-      # (deixa comentado até o Orquestrador estar implementado)
 
-      - name: Run validation script
-        working-directory: ./script
-        run: go run main.go --test
-        # ⚠️ Este comando vai falhar se o Orquestrador não existir.
-        # Deixe comentado até implementar os endpoints.
-        # run: go run main.go --test
+      # -----------------------------------------------------
+      # Rodar script de validação
+      # - Depende do Orquestrador rodando
+      #
+      # - name: Run validation script
+      #   working-directory: ./script
+      #   run: go run main.go --test
+
+      # -----------------------------------------------------
+      # Docker build
+      # - Cada serviço terá seu Dockerfile (avengers, ironman, thor…)
+      # - Quando implementar, descomente para garantir que a imagem builda
+      #
+      # - name: Build Orchestrator Docker image
+      #   run: docker build -t statement-app ./cmd/avengers
 
       - name: Lint
         run: go vet ./...

@@ -1,0 +1,74 @@
+# --------------------
+# Go
+# --------------------
+# Binários compilados
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Diretórios de build
+bin/
+build/
+dist/
+
+# Cache do Go
+*.log
+*.prof
+*.pprof
+*.svg
+*.cover
+*.test
+*.tmp
+*.cache/
+vendor/
+
+# Módulos locais
+go.sum
+
+# --------------------
+# IDEs e editores
+# --------------------
+.vscode/
+.idea/
+*.swp
+*~
+*.iml
+
+# --------------------
+# MacOS
+# --------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --------------------
+# Docker
+# --------------------
+*.pid
+*.tar
+*.gz
+*.bak
+docker-compose.override.yml
+
+# --------------------
+# Testes e scripts
+# --------------------
+coverage/
+*.coverprofile
+*.cov
+*.lcov
+test-results/
+script/output/
+script/tmp/
+
+# --------------------
+# CI/CD
+# --------------------
+# Logs e artefatos de pipelines
+.github/workflows/*.tmp
+*.retry
+*.lock

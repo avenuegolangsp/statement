@@ -10,9 +10,26 @@ jobs:
   build-test:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ./script  
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: pass
+          POSTGRES_DB: statement
+        ports:
+          - 5432:5432
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+
+      # kafka:
+      #   image: bitnami/kafka:3
+      #   ports:
+      #     - 9092:9092
+      # 👉 descomentar quando implementar mensageria no Ironman/Thor
 
     steps:
       - name: Checkout repo
@@ -23,23 +40,26 @@ jobs:
         with:
           go-version: '1.21'
 
-      - name: Install deps
-        run: go mod tidy
+      # -----------------------------------------------------
+      # 👉 Build Orquestrador (Avengers)
+      # working-directory: ./avengers
+      # run: go build -o ../../orchestrator ./cmd/api/main.go
+      #
+      # - name: Run Orchestrator in background
+      #   run: |
+      #     ./orchestrator &
+      #     sleep 5
+      #     curl -f http://localhost:8080/health || exit 1
+      #
+      # -----------------------------------------------------
+      # (deixa comentado até o Orquestrador estar implementado)
 
-      - name: Run tests
-        run: make test || go test ./...  
+      - name: Run validation script
+        working-directory: ./script
+        run: go run main.go --test
+        # ⚠️ Este comando vai falhar se o Orquestrador não existir.
+        # Deixe comentado até implementar os endpoints.
+        # run: go run main.go --test
 
       - name: Lint
         run: go vet ./...
-
-  docker-build:
-    runs-on: ubuntu-latest
-    needs: build-test
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Build Docker image
-        working-directory: ./script   # 👈 Dockerfile dentro de script
-        run: docker build -t statement-app .
